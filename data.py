@@ -94,7 +94,7 @@ def check_thread(threads):
 def main ():
     dataset =readdata("data/url_all/dataset.csv")
     numdata=1000
-    for  i in range(105):#len(dataset['url'])//numdata):
+    for  i in range(681,len(dataset['url'])//numdata):
 	threads=[]
 	dic = defaultdict(list)
 	filename='data/dataset'+str(i)+'.csv'
