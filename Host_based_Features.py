@@ -23,11 +23,13 @@ def rank(host):
 	rank_host=-1
         #print xmlpath
         try:
-            xml= urllib2.urlopen(xmlpath)
-            dom =minidom.parse(xml) 
-            rank_host=find_ele_with_attribute(dom,'REACH','RANK')
-            #country=find_ele_with_attribute(dom,'REACH','RANK')
-            rank_country=find_ele_with_attribute(dom,'COUNTRY','RANK')
+	    r=request.get(xmlpath)
+	    rlist=r.content.split('>')
+	    for i in rlist:
+		if 'REACH' in i and 'RANK=' in i:
+		    rank_host=i.split("\"")[-2]
+            	if 'COUNTRY' in i and 'RANK=' in i:
+		    rank_country=i.split("\"")[-2]
             return [rank_host,rank_country]
 
         except Exception as e:
