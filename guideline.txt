@@ -1,0 +1,17 @@
+install spark
+export SPARK_HOME=/srv/spark
+
+export PATH=$SPARK_HOME/bin:$PATH
+
+install java
+
+sudo apt install openjdk-8-jdk
+if you install java 11 ,you will type in commandline:
+sudo update-alternatives --config java
+install jvm/java-8-openjdk-amd64 in source python
+import findspark
+import os
+spark_location='/opt/spark-2.4.3/' # Set your own
+java8_location= '/usr/lib/jvm/java-8-openjdk-amd64' # Set your own
+os.environ['JAVA_HOME'] = java8_location
+findspark.init(spark_home=spark_location) 

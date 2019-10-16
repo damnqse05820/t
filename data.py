@@ -13,50 +13,21 @@ def readdata(filename):
 	return dataset
 
 
-def hosttourl(host):
-	
-	try:
-		IP=socket.gethostbyname(host)
-		listport=[]
-    		for port in range(0,1025): 
-        		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			sock.settimeout(2)
-        		result = sock.connect((IP, port))			
-        		if result == 0:
-				listport.append(port)
-		sock.close()
-		if len(listport)==0:
-			return host+":1200"
-		if 443 in listport:
-            		return host+":443"
-		elif 80 in listport:
-        		return host+":80"
-		else:
-			return host+":"+str(listport[0])
-	except KeyboardInterrupt:
-		return host+":1200"
-	except socket.gaierror:
-    		return host+":1200"
-	except socket.error:
-    		return host+":1200"
-
-
 #print dataset
 def datafurniture(dic,data,start,end,steps):    
     
     for i in range(start,end,steps):
 	if not '://' in data['url'][i]:
-		url =hosttourl(data['url'][i])
+		url =search_in_google(data['url'][i])
 	else:
 		url =data['url'][i]
 	#print url
     	dicti=(feature_extract(url,data['malware'][i]))    
 	for key,value in dicti.items():
-		if dicti[key]:
-			dicti[key]=0
 		dic[key].append(value)
+	dic["URL"].append(data['url'][i])
 	print threading.current_thread().name,i
-	#print data['url'][46067]
+	#print data['url'][20003]
 
 def writedata(data,filename):
     df= pd.DataFrame(data)	
@@ -92,18 +63,16 @@ def check_thread(threads):
 
 
 def main ():
-    dataset =readdata("data/url_all/dataset.csv")
-    numdata=1000
-    for  i in range(681,len(dataset['url'])//numdata):
-	threads=[]
-	dic = defaultdict(list)
-	filename='data/dataset'+str(i)+'.csv'
-	thread(dataset,i*numdata,(i+1)*numdata,threads,dic)
-	while check_thread(threads):
-		print "."
-	writedata(dic,filename)
+    dataset =readdata("data/url_all/dataset1.csv")
+    threads=[]
+    dic = defaultdict(list)
+    filename='data/dataset.csv'
+    thread(dataset,20000,80000,threads,dic)
+    while check_thread(threads):
+	print "."
+    writedata(dic,filename)
 
-main()
+#main()
 
 
 #thread1.start()

@@ -9,10 +9,10 @@ from Content_based_Features import *
 from Host_based_Features import *
 from Other_Features import *
 import magic
-
+from collections import defaultdict
 #extract furniture in url
 def feature_extract(url,malicious):
-        Feature={}
+        Feature=defaultdict(list)
         tokens_words=re.split('\W+',url)       #Extract bag of words stings delimited by (.,/,?,,=,-,_)
 	soup =""
 	r=''
@@ -30,85 +30,92 @@ def feature_extract(url,malicious):
         path=obj.path
 	query=obj.query
 	subdomain,domain,suffix=tldextract.extract(url)
-	host=domain+"."+suffix
-	
-	if url.split(':')[1].isdigit():
-		Feature['URL']=url.split(':')[0]
-	else:
-		Feature['URL']=url
-	Feature['NumDots']=NumDots(Feature['URL'])
-	Feature['SubdomainLevel']=SubdomainLevel(subdomain)
-	Feature['PathLevel']=PathLevel(path)
-        Feature['NumDash']=NumDash(Feature['URL'])
-	Feature['NumDashInHost']=NumDashInHostname(hostname)
-	Feature['AtSymbol']=AtSymbol(Feature['URL'])
-	Feature['TildeSymbol']=TildeSymbol(Feature['URL'])
-	Feature['NumUnderscore']=NumUnderscore(Feature['URL'])
-	Feature['NumPercent']=NumPercent(Feature['URL'])
-	Feature['NumQueryComponents']=NumQueryComponents(query)
-	Feature['NumAmpersand']=NumAmpersand(Feature['URL'])
-	Feature['NumHash']=NumHash(url)
-	Feature['NumNumericChars']=NumNumericChars(Feature['URL'])
-	Feature['NoHttps']=NoHttps(Feature['URL'])
-	Feature['RandomString']=RandomString(Feature['URL'])
-	Feature['IpAddress'],IP = IpAddress(hostname)
-	Feature['DomainInSubdomains']= DomainInSubdomains(subdomain,suffix)
-	Feature['DomainInPaths']= DomainInPath(path,suffix)
-	Feature['HttpsInHostname']= HttpsInHostname(hostname)
-	Feature['HostnameLength']=HostnameLength(hostname)
-	Feature['DomainInPaths']= DomainInPath(path,suffix)
-	Feature['PathLength']= PathLength(path)
-	Feature['QueryLength']= QueryLength(query)
-	Feature['DoubleSlashInPath']=DoubleSlashInPath(path)
-	Feature['NumSensitiveWords']= NumSensitiveWords(tokens_words)
-        Feature['rank_host'],Feature['rank_country'] =rank(hostname)
-	Feature['AgeDomain']= AgeDomain(host)
-	Feature['Statistical_report']= Statistical_report(Feature['URL'],IP)
-	Feature['PctExtHyperlinks']= PctExtHyperlinks(Feature['URL'], soup, domain)
-	Feature['PctExtResourceUrls']=PctExtResourceUrls(Feature['URL'], soup, domain)
-	Feature['RightClickDisabled']=RightClickDisabled(soup)
-	Feature['PopUpWindow']=PopUpWindow(soup)
-	Feature['IframeOrFrame']=IframeOrFrame(soup)
-	Feature['SubmitInfoToEmail']=SubmitInfoToEmail(soup)
-	Feature['ExtFavicon']=ExtFavicon(Feature['URL'], soup, domain)
-        Feature['UrlLength']=UrlLength(Feature['URL'])
-	Feature['PctExtNullSelfRedirectHyperlinksRT']=PctExtNullSelfRedirectHyperlinksRT(soup)
-	Feature['MissingTitle']=MissingTitle(soup)
-	Feature['ImagesOnlyInForm']=ImagesOnlyInForm(soup)
-	Feature['SubdomainLevelRT']=SubdomainLevelRT(subdomain)
-	Feature['UrlLengthRT']=UrlLengthRT(Feature['URL'])
-	Feature['AbnormalExtFormActionR']=AbnormalExtFormActionR(soup)      
-	Feature['RelativeFormAction']=RelativeFormAction(soup)
-	Feature['ExtMetaScriptLinkRT']=ExtMetaScriptLinkRT(Feature['URL'],soup,domain)
-        Feature['AbnormalFormAction']=AbnormalFormAction(soup)
-	Feature['PctExtResourceUrlsRT']=PctExtResourceUrlsRT(Feature['URL'],soup,domain) 			    	
-        Feature['avg_domain_token_length'],Feature['domain_token_count'],Feature['largest_domain'] = Tokenise(hostname)
-        Feature['avg_path_token'],Feature['path_token_count'],Feature['largest_path'] = Tokenise(path)
-	Feature['avg_token_length'],Feature['token_count'],Feature['largest_token'] = Tokenise(Feature['URL'])
-       
-	Feature['Malicious']=malicious
+
+	Feature['URL'].append(url)
+	Feature['NumDots'].append(NumDots(url))
+	Feature['SubdomainLevel'].append(SubdomainLevel(subdomain))
+	Feature['PathLevel'].append(PathLevel(path))
+        Feature['NumDash'].append(NumDash(url))
+	Feature['NumDashInHost'].append(NumDashInHostname(hostname))
+	Feature['AtSymbol'].append(AtSymbol(url))
+	Feature['TildeSymbol'].append(TildeSymbol(url))
+	Feature['NumUnderscore'].append(NumUnderscore(url))
+	Feature['NumPercent'].append(NumPercent(url))
+	Feature['NumQueryComponents'].append(NumQueryComponents(query))
+	Feature['NumAmpersand'].append(NumAmpersand(url))
+	Feature['NumHash'].append(NumHash(url))
+	Feature['NumNumericChars'].append(NumNumericChars(url))
+	Feature['NoHttps'].append(NoHttps(url))
+	Feature['RandomString'].append(RandomString(url))
+	IpAddresses,IP = IpAddress(hostname)
+	Feature['IpAddress'].append(IpAddresses)
+	Feature['DomainInSubdomains'].append(DomainInSubdomains(subdomain,suffix))
+	Feature['DomainInPaths'].append(DomainInPath(path,suffix))
+	Feature['HttpsInHostname'].append(HttpsInHostname(hostname))
+	Feature['HostnameLength'].append(HostnameLength(hostname))
+	Feature['PathLength'].append(PathLength(path))
+	Feature['QueryLength'].append(QueryLength(query))
+	Feature['DoubleSlashInPath'].append(DoubleSlashInPath(path))
+	Feature['NumSensitiveWords'].append(NumSensitiveWords(tokens_words))
+	rank_host,rank_country=rank(hostname)
+        Feature['rank_host'].append(rank_host)
+	Feature['rank_country'].append(rank_country)
+	Feature['AgeDomain'].append(AgeDomain(hostname))
+	Feature['Statistical_report'].append(Statistical_report(url,IP))
+	Feature['PctExtHyperlinks'].append(PctExtHyperlinks(url, soup, domain))
+	Feature['PctExtResourceUrls'].append(PctExtResourceUrls(url, soup, domain))
+	Feature['RightClickDisabled'].append(RightClickDisabled(soup))
+	Feature['PopUpWindow'].append(PopUpWindow(soup))
+	Feature['IframeOrFrame'].append(IframeOrFrame(soup))
+	Feature['SubmitInfoToEmail'].append(SubmitInfoToEmail(soup))
+	Feature['ExtFavicon'].append(ExtFavicon(url, soup, domain))
+        Feature['UrlLength'].append(UrlLength(url))
+	Feature['PctExtNullSelfRedirectHyperlinksRT'].append(PctExtNullSelfRedirectHyperlinksRT(soup))
+	Feature['MissingTitle'].append(MissingTitle(soup))
+	Feature['ImagesOnlyInForm'].append(ImagesOnlyInForm(soup))
+	Feature['SubdomainLevelRT'].append(SubdomainLevelRT(subdomain))
+	Feature['UrlLengthRT'].append(UrlLengthRT(url))
+	Feature['AbnormalExtFormActionR'].append(AbnormalExtFormActionR(soup)) 
+	Feature['RelativeFormAction'].append(RelativeFormAction(soup))
+	Feature['ExtMetaScriptLinkRT'].append(ExtMetaScriptLinkRT(url,soup,domain))
+        Feature['AbnormalFormAction'].append(AbnormalFormAction(soup))
+	Feature['PctExtResourceUrlsRT'].append(PctExtResourceUrlsRT(url,soup,domain))
+	avg_domain_token_length,domain_token_count, largest_domain = Tokenise(hostname)
+        Feature['avg_domain_token_length'].append(avg_domain_token_length)
+	Feature['domain_token_count'].append(domain_token_count)
+	Feature['largest_domain'].append(largest_domain)
+	avg_path_token,path_token_count,largest_path= Tokenise(path)
+        Feature['avg_path_token'].append(avg_path_token)
+	Feature['path_token_count'].append(path_token_count)
+	Feature['largest_path'].append(largest_path)
+	avg_token_length,token_count,largest_token=Tokenise(url)
+	Feature['avg_token_length'].append(avg_token_length)
+	Feature['token_count'].append(token_count)
+	Feature['largest_token'].append(largest_token)
+
+	Feature['Malicious'].append(malicious)
         wfeatures=web_content_features(url,soup)
         
         for key in wfeatures:
-            Feature[key]=wfeatures[key]
+            Feature[key].append(wfeatures[key])
 
-	Feature['FakeLinkInStatusBar']=FakeLinkInStatusBar(soup)
-	Feature['FrequentDomainNameMismatch']=FrequentDomainNameMismatch(domain,soup)
-	Feature['PctNullSelfRedirectHyperlinks']=PctNullSelfRedirectHyperlinks(soup)
+	Feature['FakeLinkInStatusBar'].append(FakeLinkInStatusBar(soup))
+	Feature['FrequentDomainNameMismatch'].append(FrequentDomainNameMismatch(domain,soup))
+	Feature['PctNullSelfRedirectHyperlinks'].append(PctNullSelfRedirectHyperlinks(soup))
         return Feature
 
 
 #print feature_extract("http://c.img001.com/re58",1)
-#def search_in_google(url): 
+def search_in_google(url): 
 	
-#	if re.search("^http",url):
-#		return url
-#	for j in search(url, tld="co.in", num=10, stop=1, pause=2): 
-#    		if url in j:
-#			return j
-#		else:
-#			return 0
-#	return 0
+	if re.search("^http",url):
+		return url
+	for j in search(url, tld="co.in", num=10, stop=1, pause=2): 
+    		if url in j:
+			return j
+		else:
+			return 0
+	return 0
 
 #url="stainupurworejo.ac.id/wp-content/upgrade/autodhl/authorize/track.php?rand=13InboxLightaspxn.1774256418&&email="
 

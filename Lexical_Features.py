@@ -45,7 +45,7 @@ def NumHash(url):
     return url.count("#")
 
 def NumNumericChars(url):
-    x = re.findall("\d", url)
+    x=re.findall(r'\d',url)  
     return len(x)
 
 def NoHttps(url):
