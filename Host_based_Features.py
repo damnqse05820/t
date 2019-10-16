@@ -1,17 +1,17 @@
 import whois
 from datetime import datetime
 import time
-
+import requests
 def AgeDomain(domain):# year
     try:
-    	domain= whois.query(domain)
-	
+    	age= whois.query(domain)
+	#print age	
     except:
 	return 0
-    if domain==None:
+    if domain:
 	return 0
-    creation_date = domain.creation_date
-    expiration_date = domain.expiration_date
+    creation_date = age.creation_date
+    expiration_date = age.expiration_date
     ageofdomain = 0
     if expiration_date:
  	ageofdomain = abs((expiration_date - creation_date).days)
@@ -23,7 +23,8 @@ def rank(host):
 	rank_host=-1
         #print xmlpath
         try:
-	    r=request.get(xmlpath)
+	    r=requests.get(xmlpath)
+	    #print r.content
 	    rlist=r.content.split('>')
 	    for i in rlist:
 		if 'REACH' in i and 'RANK=' in i:
@@ -35,4 +36,4 @@ def rank(host):
         except Exception as e:
             return [-1,-1]
 
-
+#print AgeDomain('andjsgxvxj.com')

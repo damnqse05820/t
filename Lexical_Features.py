@@ -24,10 +24,10 @@ def NumDashInHostname(hostname):
     return hostname.count("-")
 
 def AtSymbol(url):
-    return 1 if url.count("@") else 0
+    return  url.count("@") 
 
 def TildeSymbol(url):
-    return 1 if url.count("~") else 0
+    return  url.count("~")
 
 def NumUnderscore(url):
     return url.count("_")
@@ -58,30 +58,29 @@ def IpAddress(hostname):
 	return 1,IP
     except:
 	return 0,IP
-
+'''
 def RandomString(url):	
     if ' ' in url :
         return 1
     return 0
-
+'''
 #Checks if TLD or ccTLD is used as part of the subdomain in webpage URL
-def DomainInSubdomains(subdomain,suffix):
+'''def DomainInSubdomains(subdomain,suffix):
     lists=suffix.split('.')
     for i in lists:
 	if i in subdomain:
 	   return 1
     return 0
-
+'''
 #Checks if TLD or ccTLD is used as part of the path in webpage URL
-def DomainInPath(path,suffix):
-    lists=suffix.split('.')
-    for i in lists:
-	if i in path:
+def DomainInPath(path):
+    urlmatch='^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&\'\(\)\*\+,;=.]+$'
+    if re.search(urlmatch, path):
 	   return 1
     return 0
 
-def HttpsInHostname(hostname):
-    return 1 if "https" in hostname or "http" in hostname else 0 
+def HttpsInPath(path):
+    return 1 if "https" in path  else 0 
 
 def HostnameLength(hostname):
     return len(hostname)
@@ -106,7 +105,7 @@ def NumSensitiveWords(tokens_words):
             count+=1;
     return count
 
-
+'''
 def Tokenise(url):
 
         if url=='':
@@ -125,5 +124,5 @@ def Tokenise(url):
             return [float(sum_len)/no_ele,no_ele,largest]
         except:
             return [0,no_ele,largest]
-
+'''
 

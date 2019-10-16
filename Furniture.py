@@ -10,9 +10,12 @@ from Host_based_Features import *
 from Other_Features import *
 import magic
 from collections import defaultdict
+import requests
+
 #extract furniture in url
 def feature_extract(url,malicious):
         Feature=defaultdict(list)
+	requests.packages.urllib3.disable_warnings()
         tokens_words=re.split('\W+',url)       #Extract bag of words stings delimited by (.,/,?,,=,-,_)
 	soup =""
 	r=''
@@ -20,14 +23,26 @@ def feature_extract(url,malicious):
 		
 		r= requests.get(url,verify=False,timeout=10)
 		if 'HTML document' in magic.from_buffer(r.content) :
-		     soup=BeautifulSoup(r.content,"lxml")	
+		     soup=BeautifulSoup(r.content,"lxml")
+		#else:
+		     #print "request not html"
+		     #return -1
 
 	except Exception as e:
+		#print "url is die"
+		#return -1
 		pass
 	
         obj=urlparse(url)
-        hostname=obj.netloc
-        path=obj.path
+	hostname=''
+	path=''
+	if obj.netloc == '':
+	     hostname=obj.path
+             path=''
+	else:
+	     hostname=obj.netloc
+	     path=obj.path
+        
 	query=obj.query
 	subdomain,domain,suffix=tldextract.extract(url)
 
@@ -46,12 +61,12 @@ def feature_extract(url,malicious):
 	Feature['NumHash'].append(NumHash(url))
 	Feature['NumNumericChars'].append(NumNumericChars(url))
 	Feature['NoHttps'].append(NoHttps(url))
-	Feature['RandomString'].append(RandomString(url))
+	#Feature['RandomString'].append(RandomString(url))
 	IpAddresses,IP = IpAddress(hostname)
 	Feature['IpAddress'].append(IpAddresses)
-	Feature['DomainInSubdomains'].append(DomainInSubdomains(subdomain,suffix))
-	Feature['DomainInPaths'].append(DomainInPath(path,suffix))
-	Feature['HttpsInHostname'].append(HttpsInHostname(hostname))
+	#Feature['DomainInSubdomains'].append(DomainInSubdomains(subdomain,suffix))
+	Feature['DomainInPath'].append(DomainInPath(path))
+	Feature['HttpsInPath'].append(HttpsInPath(path))
 	Feature['HostnameLength'].append(HostnameLength(hostname))
 	Feature['PathLength'].append(PathLength(path))
 	Feature['QueryLength'].append(QueryLength(query))
@@ -80,7 +95,7 @@ def feature_extract(url,malicious):
 	Feature['ExtMetaScriptLinkRT'].append(ExtMetaScriptLinkRT(url,soup,domain))
         Feature['AbnormalFormAction'].append(AbnormalFormAction(soup))
 	Feature['PctExtResourceUrlsRT'].append(PctExtResourceUrlsRT(url,soup,domain))
-	avg_domain_token_length,domain_token_count, largest_domain = Tokenise(hostname)
+	'''avg_domain_token_length,domain_token_count, largest_domain = Tokenise(hostname)
         Feature['avg_domain_token_length'].append(avg_domain_token_length)
 	Feature['domain_token_count'].append(domain_token_count)
 	Feature['largest_domain'].append(largest_domain)
@@ -92,7 +107,7 @@ def feature_extract(url,malicious):
 	Feature['avg_token_length'].append(avg_token_length)
 	Feature['token_count'].append(token_count)
 	Feature['largest_token'].append(largest_token)
-
+	'''
 	Feature['Malicious'].append(malicious)
         wfeatures=web_content_features(url,soup)
         
@@ -107,11 +122,9 @@ def feature_extract(url,malicious):
 
 #print feature_extract("http://c.img001.com/re58",1)
 def search_in_google(url): 
-	
-	if re.search("^http",url):
-		return url
+
 	for j in search(url, tld="co.in", num=10, stop=1, pause=2): 
-    		if url in j:
+    		if url in tldextract.extract(j).netloc:
 			return j
 		else:
 			return 0

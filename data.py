@@ -5,6 +5,7 @@ import re
 import threading
 import socket
 import time
+
 def readdata(filename):
 	dataset={}	
 	data = pd.read_csv(filename,usecols=['url', 'label'],dtype={"url": str,'label':int})
@@ -18,7 +19,11 @@ def datafurniture(dic,data,start,end,steps):
     
     for i in range(start,end,steps):
 	if not '://' in data['url'][i]:
-		url =search_in_google(data['url'][i])
+		if search_in_google(data['url'][i])==0:
+			url =data['url'][i]
+		else:
+			url =search_in_google(data['url'][i])
+		
 	else:
 		url =data['url'][i]
 	#print url
@@ -67,12 +72,12 @@ def main ():
     threads=[]
     dic = defaultdict(list)
     filename='data/dataset.csv'
-    thread(dataset,20000,80000,threads,dic)
+    thread(dataset,0,len(dataset['url']),threads,dic)
     while check_thread(threads):
 	print "."
     writedata(dic,filename)
 
-#main()
+main()
 
 
 #thread1.start()
