@@ -58,23 +58,23 @@ def IpAddress(hostname):
 	return 1,IP
     except:
 	return 0,IP
-'''
+
 def RandomString(url):	
     if ' ' in url :
         return 1
     return 0
-'''
+
 #Checks if TLD or ccTLD is used as part of the subdomain in webpage URL
-'''def DomainInSubdomains(subdomain,suffix):
+def DomainInSubdomains(subdomain,suffix):
     lists=suffix.split('.')
     for i in lists:
 	if i in subdomain:
 	   return 1
     return 0
-'''
+
 #Checks if TLD or ccTLD is used as part of the path in webpage URL
-def DomainInPath(path):
-    urlmatch='^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&\'\(\)\*\+,;=.]+$'
+def UrlInPath(path):
+    urlmatch='https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+'
     if re.search(urlmatch, path):
 	   return 1
     return 0
@@ -105,7 +105,7 @@ def NumSensitiveWords(tokens_words):
             count+=1;
     return count
 
-'''
+
 def Tokenise(url):
 
         if url=='':
@@ -124,5 +124,5 @@ def Tokenise(url):
             return [float(sum_len)/no_ele,no_ele,largest]
         except:
             return [0,no_ele,largest]
-'''
+
 

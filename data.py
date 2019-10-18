@@ -3,7 +3,7 @@ from Furniture import *
 from collections import defaultdict
 import re
 import threading
-import socket
+
 import time
 
 def readdata(filename):
@@ -18,20 +18,21 @@ def readdata(filename):
 def datafurniture(dic,data,start,end,steps):    
     
     for i in range(start,end,steps):
-	if not '://' in data['url'][i]:
-		if search_in_google(data['url'][i])==0:
-			url =data['url'][i]
+	if not 'http' in data['url'][i]:
+		if scanport(data['url'][i])==-1:
+			url ='http://'+data['url'][i]
 		else:
-			url =search_in_google(data['url'][i])
+			url =scanport(data['url'][i])
 		
 	else:
 		url =data['url'][i]
 	#print url
     	dicti=(feature_extract(url,data['malware'][i]))    
 	for key,value in dicti.items():
-		dic[key].append(value)
+		#print value[0]
+		dic[key].append(value[0])
 	dic["URL"].append(data['url'][i])
-	print threading.current_thread().name,i
+	print threading.current_thread().name,i,url 
 	#print data['url'][20003]
 
 def writedata(data,filename):
@@ -68,10 +69,11 @@ def check_thread(threads):
 
 
 def main ():
-    dataset =readdata("data/url_all/dataset1.csv")
+    dataset =readdata("data/url_all/dataset.csv")
     threads=[]
     dic = defaultdict(list)
     filename='data/dataset.csv'
+    print len(dataset['url'])
     thread(dataset,0,len(dataset['url']),threads,dic)
     while check_thread(threads):
 	print "."

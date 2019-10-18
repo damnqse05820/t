@@ -11,7 +11,8 @@ from Other_Features import *
 import magic
 from collections import defaultdict
 import requests
-
+from googlesearch import search
+import socket
 #extract furniture in url
 def feature_extract(url,malicious):
         Feature=defaultdict(list)
@@ -24,8 +25,8 @@ def feature_extract(url,malicious):
 		r= requests.get(url,verify=False,timeout=10)
 		if 'HTML document' in magic.from_buffer(r.content) :
 		     soup=BeautifulSoup(r.content,"lxml")
-		#else:
-		     #print "request not html"
+		else:
+		     print "request not html"
 		     #return -1
 
 	except Exception as e:
@@ -61,11 +62,11 @@ def feature_extract(url,malicious):
 	Feature['NumHash'].append(NumHash(url))
 	Feature['NumNumericChars'].append(NumNumericChars(url))
 	Feature['NoHttps'].append(NoHttps(url))
-	#Feature['RandomString'].append(RandomString(url))
+	Feature['RandomString'].append(RandomString(url))
 	IpAddresses,IP = IpAddress(hostname)
 	Feature['IpAddress'].append(IpAddresses)
-	#Feature['DomainInSubdomains'].append(DomainInSubdomains(subdomain,suffix))
-	Feature['DomainInPath'].append(DomainInPath(path))
+	Feature['DomainInSubdomains'].append(DomainInSubdomains(subdomain,suffix))
+	Feature['UrlInPath'].append(UrlInPath(path))
 	Feature['HttpsInPath'].append(HttpsInPath(path))
 	Feature['HostnameLength'].append(HostnameLength(hostname))
 	Feature['PathLength'].append(PathLength(path))
@@ -106,8 +107,8 @@ def feature_extract(url,malicious):
 	avg_token_length,token_count,largest_token=Tokenise(url)
 	Feature['avg_token_length'].append(avg_token_length)
 	Feature['token_count'].append(token_count)
-	Feature['largest_token'].append(largest_token)
-	'''
+	Feature['largest_token'].append(largest_token)'''
+	
 	Feature['Malicious'].append(malicious)
         wfeatures=web_content_features(url,soup)
         
@@ -119,19 +120,44 @@ def feature_extract(url,malicious):
 	Feature['PctNullSelfRedirectHyperlinks'].append(PctNullSelfRedirectHyperlinks(soup))
         return Feature
 
-
-#print feature_extract("http://c.img001.com/re58",1)
+#http://fa.com/en/home.html
+#print feature_extract("facebook.com:80",1)
 def search_in_google(url): 
 
 	for j in search(url, tld="co.in", num=10, stop=1, pause=2): 
-    		if url in tldextract.extract(j).netloc:
+    		if url in urlparse(j).netloc:
 			return j
 		else:
 			return 0
 	return 0
 
-#url="stainupurworejo.ac.id/wp-content/upgrade/autodhl/authorize/track.php?rand=13InboxLightaspxn.1774256418&&email="
+	
+def scanport(domain):
+    
+    lsport=[]
+    url=''
+    try:
+	ip=socket.gethostbyname(domain)
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex((ip, 443))
+        if result == 0:
+            #print "Port Open"
+	    url='https://'+domain
+	else:
+	    url='http://'+domain
+        sock.close()
+    except KeyboardInterrupt:
+    	return -1
+    except socket.gaierror:
+    	return -1
+    except socket.error:
+    	return -1
+    return url
 
+
+#print googleSearch('fabook.com')
+#url="stainupurworejo.ac.id/wp-content/upgrade/autodhl/authorize/track.php?rand=13InboxLightaspxn.1774256418&&email="
+#print search_in_google("fakebook.com")
 #print re.search("^http",url)
 #def main(url):
 #	if search_in_google(url) ==0:

@@ -28,9 +28,9 @@ def rank(host):
 	    rlist=r.content.split('>')
 	    for i in rlist:
 		if 'REACH' in i and 'RANK=' in i:
-		    rank_host=i.split("\"")[-2]
+		    rank_host=int(i.split("\"")[-2])
             	if 'COUNTRY' in i and 'RANK=' in i:
-		    rank_country=i.split("\"")[-2]
+		    rank_country=int(i.split("\"")[-2])
             return [rank_host,rank_country]
 
         except Exception as e:

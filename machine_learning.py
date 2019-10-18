@@ -210,8 +210,10 @@ class Detector:
         # dataset.fillna(0)
         # Hop nhat cac cot thuoc tinh thanh mot cot dat ten la "features"
 	cols =loadcols(dataset)
+	print cols[55]
         assembler = VectorAssembler(inputCols=cols, outputCol="features")
         dataset = assembler.transform(dataset.fillna(0))
+	#print dataset["features"][55]
         #print("len(data)v2:", dataset.count())
         dataset = dataset.withColumn("label", dataset['Malicious'])
         #print("len(data)v3:", dataset.count())
@@ -316,9 +318,10 @@ class Detector:
     #spark = SparkSession.builder.appName("MalwareDetector").getOrCreate()
     
     def predict(self): 
+	#print self.predictingData.printSchema()
         predictions = self.model.transform(self.predictingData)
-        predictions.select("prediction").show()
-        
+	print predictions.select("prediction").show()
+        df.write.format("csv").save("output.csv")
 
         
 import pandas  as pd
@@ -329,19 +332,24 @@ if __name__ == "__main__":
     # Khoi tao lop Detector
     #if int(sys.argv[1])==1:
     feature=feature_extract(sys.argv[1],-1)
-    filename="data/predictions.csv"
+    if feature==-1:
+	f=open("output.txt",w)
+	f.write("1")
+	f.close()
+    else:
+    	filename="data/predictions.csv"
 #    for i in feature:
 #	print len(feature[i]),i
-    df= pd.DataFrame(feature)	
-    df.to_csv(filename,index='false')
+    	df= pd.DataFrame(feature)	
+    	df.to_csv(filename,index='false')
     	#detector = Detector(mode=int(sys.argv[1]),datapath=filename)
     #else:
 	#detector = Detector(mode=int(sys.argv[1]),datapath=sys.argv[2])
     #detector = Detector(mode=0)
-    detector=Detector(mode=1,datapath=filename)
+    	detector=Detector(mode=1,datapath=filename)
     # Chay kiem thu
     #detector.evaluate()
-    detector.predict()
+    	detector.predict()
 
 
 
