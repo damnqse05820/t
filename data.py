@@ -1,14 +1,16 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 import pandas as pd
 from Furniture import *
 from collections import defaultdict
 import re
 import threading
-
+#import multiprocessing as mp
 import time
 
 def readdata(filename):
 	dataset={}	
-	data = pd.read_csv(filename,usecols=['url', 'label'],dtype={"url": str,'label':int})
+	data = pd.read_csv(filename,usecols=['url', 'label'],dtype={"url": str,'label':int},true_values = ['bad'],false_values = ['good'])
 	dataset['url']=data['url']
 	dataset['malware']=data['label']
 	return dataset
@@ -18,26 +20,32 @@ def readdata(filename):
 def datafurniture(dic,data,start,end,steps):    
     
     for i in range(start,end,steps):
-	if not 'http' in data['url'][i]:
-		if scanport(data['url'][i])==-1:
-			url ='http://'+data['url'][i]
+	if not re.search('^http',data['url'].iloc[i]):
+		hostname,path,query,fragment=spliturl(data['url'].iloc[i])
+		if scanport(hostname)==1:
+			url ='https://'+data['url'].iloc [i]
 		else:
-			url =scanport(data['url'][i])
+			url ='http://'+data['url'].iloc [i]
 		
 	else:
-		url =data['url'][i]
+		url =data['url'].iloc [i]
 	#print url
-    	dicti=(feature_extract(url,data['malware'][i]))    
+	print threading.current_thread().name,i,url,data['malware'].iloc[i]
+    	dicti=feature_extract(url,data['malware'].iloc[i])
 	for key,value in dicti.items():
 		#print value[0]
+	     if key !="URL":
 		dic[key].append(value[0])
-	dic["URL"].append(data['url'][i])
-	print threading.current_thread().name,i,url 
+	     else:
+		dic[key].append(data['url'].iloc [i])
+		#print len(dic[key])
+	#print threading.current_thread().name,i,url 
 	#print data['url'][20003]
 
 def writedata(data,filename):
     df= pd.DataFrame(data)	
     df.to_csv(filename,index='false')
+    print "write successful"
 
 
 
@@ -53,14 +61,16 @@ def writedata(data,filename):
 #thread8 =threading.Thread(name='worker8',target=worker,args=(dataset,7*len(dataset['url'])//8,len(dataset['url'])))
 
 def thread(dataset,start,end,threads,dic):
-    for i in range(10):
-    	t = threading.Thread(target=datafurniture,args=(dic,dataset,i+start,end,10))
+    for i in range(100):
+    	t = threading.Thread(target=datafurniture,args=(dic,dataset,i+start,end,100))
     	threads.append(t)
     	t.start()
+    for j in threads:
+	j.join()
 
 
 def check_thread(threads):
-	for i in range(10):
+	for i in range(100):
 		if threads[i].is_alive():
 			time.sleep(5)
 			return True
@@ -70,14 +80,17 @@ def check_thread(threads):
 
 def main ():
     dataset =readdata("data/url_all/dataset.csv")
-    threads=[]
-    dic = defaultdict(list)
+    #dic = defaultdict(list)
     filename='data/dataset.csv'
     print len(dataset['url'])
-    thread(dataset,0,len(dataset['url']),threads,dic)
-    while check_thread(threads):
-	print "."
-    writedata(dic,filename)
+    for i in range(4,len(dataset['url'])//10000 +1):
+	dic = defaultdict(list)
+	threads=[]
+    	thread(dataset,i*10000,(i+1)*10000,threads,dic)
+    #while check_thread(threads):
+	#print "."
+	filename1='data/dataset'+str(i)+'.csv'
+    	writedata(dic,filename1)
 
 main()
 

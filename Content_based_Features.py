@@ -183,44 +183,45 @@ def ImagesOnlyInForm(soup):
 
 
 
-def web_content_features(url,soup):#search cac the 
+def web_content_features(url,soup):#search cac the
     wfeatures={}
-    total_cnt=0
-    try:        
+    default_val=0
+    #total_cnt=0
+    try:
 
         #print source_code[:500]
 
-        wfeatures['src_html_cnt']=soup.count('<html')
-        wfeatures['src_hlink_cnt']=soup.count('<a href=')
-        wfeatures['src_iframe_cnt']=soup.count('<iframe')
+       # wfeatures['src_html_cnt']=soup.count('<html')
+        #wfeatures['src_hlink_cnt']=soup.count('<a href=')
+        #wfeatures['src_iframe_cnt']=soup.count('<iframe')
         #suspicioussrc_ javascript functions count
 
         wfeatures['src_eval_cnt']=soup.count('eval(')
         wfeatures['src_escape_cnt']=soup.count('escape(')
-        wfeatures['src_link_cnt']=soup.count('link(')
-        wfeatures['src_underescape_cnt']=soup.count('underescape(')
+        #wfeatures['src_link_cnt']=soup.count('link(')
+        #wfeatures['src_underescape_cnt']=soup.count('underescape(')
         wfeatures['src_exec_cnt']=soup.count('exec(')
         wfeatures['src_search_cnt']=soup.count('search(')
-        
-        for key in wfeatures:
-            if(key!='src_html_cnt' and key!='src_hlink_cnt' and key!='src_iframe_cnt'):
-                total_cnt+=wfeatures[key]
-        wfeatures['src_total_jfun_cnt']=total_cnt
-    
+
+        #for key in wfeatures:
+         #   if(key!='src_html_cnt' and key!='src_hlink_cnt' and key='src_iframe_cnt'):
+          #      total_cnt+=wfeatures[key]
+        #wfeatures['src_total_jfun_cnt']=total_cnt
+
     except Exception, e:
-        #print "Error"+str(e)+" in downloading page "+url 
-        default_val=-1
-        
-        wfeatures['src_html_cnt']=default_val
-        wfeatures['src_hlink_cnt']=default_val
-        wfeatures['src_iframe_cnt']=default_val
+        #print "Error"+str(e)+" in downloading page "+url
+        #default_val=0
+
+        #wfeatures['src_html_cnt']=default_val
+        #wfeatures['src_hlink_cnt']=default_val
+        #wfeatures['src_iframe_cnt']=default_val
         wfeatures['src_eval_cnt']=default_val
         wfeatures['src_escape_cnt']=default_val
-        wfeatures['src_link_cnt']=default_val
-        wfeatures['src_underescape_cnt']=default_val
+        #wfeatures['src_link_cnt']=default_val
+       # wfeatures['src_underescape_cnt']=default_val
         wfeatures['src_exec_cnt']=default_val
         wfeatures['src_search_cnt']=default_val
-        wfeatures['src_total_jfun_cnt']=default_val  
-    
+        #wfeatures['src_total_jfun_cnt']=default_val
+
     return wfeatures
 

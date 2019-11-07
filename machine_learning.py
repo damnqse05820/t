@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 from pyspark.ml import Pipeline, PipelineModel
 from pyspark.ml.classification import RandomForestClassifier
 from pyspark.ml.feature import IndexToString, StringIndexer, VectorIndexer, VectorAssembler
@@ -18,6 +20,7 @@ from functools import reduce
 from datetime import datetime
 import sys
 import json
+import re
 '''
 filename="data/dataset.csv"
 spark =SparkSession.builder.master("local[12]").appName("URLDetector").config("spark.driver.memory", "12g").getOrCreate()
@@ -321,41 +324,71 @@ class Detector:
 	#print self.predictingData.printSchema()
         predictions = self.model.transform(self.predictingData)
 	print predictions.select("prediction").show()
-        df.write.format("csv").save("output.csv")
+	df.coalesce(1).write.format("text").option("header", "false").mode("overwrite").save("output.txt")
+        #df.write.format("csv").save("output.csv")
 
         
 import pandas  as pd
 
-if __name__ == "__main__":
-    """ HUONG DAN SU DUNG CLASS DETECTOR   
-    """
+#if __name__ == "__main__":
+#    """ HUONG DAN SU DUNG CLASS DETECTOR   
+#    """
     # Khoi tao lop Detector
     #if int(sys.argv[1])==1:
-    feature=feature_extract(sys.argv[1],-1)
-    if feature==-1:
-	f=open("output.txt",w)
-	f.write("1")
-	f.close()
-    else:
-    	filename="data/predictions.csv"
+  #  feature=feature_extract(sys.argv[1],0)
+ #   if feature==-1:
+#	f=open("output.txt",w)
+#	f.write("1")
+#	f.close()
+#    else:
+#    	filename="data/predictions.csv"
 #    for i in feature:
 #	print len(feature[i]),i
-    	df= pd.DataFrame(feature)	
-    	df.to_csv(filename,index='false')
+    	#df= pd.DataFrame(feature)	
+    	#df.to_csv(filename,index='false')
     	#detector = Detector(mode=int(sys.argv[1]),datapath=filename)
     #else:
 	#detector = Detector(mode=int(sys.argv[1]),datapath=sys.argv[2])
     #detector = Detector(mode=0)
-    	detector=Detector(mode=1,datapath=filename)
+    	#detector=Detector(mode=0)#,datapath=filename)
     # Chay kiem thu
-    #detector.evaluate()
-    	detector.predict()
+    	#detector.evaluate()
+    	#detector.predict()
 
+def main(md,url):	
+	if md==0 :
+		detector = Detector(mode=md)
+		detector.evaluate()
+		
+	elif md ==1 :
+		url =sys.argv[2]
+		if not re.search('^http',url):
+			if scanport(sys.argv[2])==-1:
+			    url ='http://'+sys.argv[2]
+			else :
+			    url =scanport(sys.argv[2])
+		
+		furniture=feature_extract(url,-1)
+		if furniture ==-1 :
+			return -1
+		elif type(furniture) =='dict':
+			filename="data/predictions.csv"
+			df.to_csv(filename,index='false')
+			df= pd.DataFrame(feature)
+			df.to_csv(filename,index='false')
+			detector = Detector(mode=md,datapath=filename)
+			detector.predict(url)
 
+	else:
+		print "you input wrong "
 
-
-
-
+if __name__ == "__main__":
+	md=int(sys.argv[1] )
+	if len(sys.argv)==3:
+		url =sys.argv[2] 
+	else:
+		url =''
+	main(md,url)
 
 
 
