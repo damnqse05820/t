@@ -36,7 +36,7 @@ modelpath="model"
 def trainModel(trainingData):
         """ Ham huan luyen du lieu
         Mac dinh training toan bo du lieu trong dataset splitratio 100% training, 0% testing
-        """
+    
         # Chuyen toan bo nhan thanh so neu chua chuyen
         # trainingData.select("label").groupBy("label").count().show()
     	labelIndexer = StringIndexer(inputCol="label", outputCol= "indexedLabel").fit(trainingData)
@@ -55,8 +55,8 @@ def trainModel(trainingData):
     	return model
 
 def evaluate(model, trainingData, testingData):
-        """ Ham kiem thu model, in ra man hinh do do chinh xac va thoi gian tinh toan
-        """
+        # Ham kiem thu model, in ra man hinh do do chinh xac va thoi gian tinh toan
+        
         time_train = 0
         time_test = 0
             
@@ -171,7 +171,7 @@ class Detector:
         self.datapath = datapath
         if mode == 0:
             self.dataset = self.loadDataset(datapath)
-            (self.trainingData, self.testingData) = self.dataset.randomSplit([0.7, 0.3])
+            (self.trainingData, self.testingData) = self.dataset.randomSplit([0.8, 0.2])
             self.trainingData = self.trainingData.repartition(300).cache()
             self.testingData = self.testingData.repartition(300).cache()
             self.modelpath = modelpath
@@ -195,7 +195,7 @@ class Detector:
                 print("Train new model")
                 self.model = self.trainModel(self.dataset)
                 #pass
-            self.predict()
+            #self.predict()
 
     def loadDataset(self, datapath):
         data = []
@@ -235,7 +235,7 @@ class Detector:
         # Chuyen toan bo gia tri thuoc tinh thanh so neu chua chuyen
         featureIndexer = VectorIndexer(inputCol="features", outputCol="indexedFeatures", maxCategories=4).fit(trainingData)
         # Khai bao thuat toan RandomForest
-        rf = RandomForestClassifier(labelCol="indexedLabel", featuresCol= "indexedFeatures", numTrees=20,maxDepth=5, maxBins=32, seed=None,impurity="gini")
+        rf = RandomForestClassifier(labelCol="indexedLabel", featuresCol= "indexedFeatures", numTrees=85,maxDepth=5, maxBins=32, seed=None,impurity="gini")
         # Chuyen nhan du doan duoc tu dang so ve dang ban dau,
         labelConverter = IndexToString(inputCol="prediction", outputCol="predictedLabel", labels=labelIndexer.labels)
         # Hop nhat tat ca cac buoc thanh mot luong duy nhat pipeline
@@ -289,7 +289,7 @@ class Detector:
         for feature in fiSorted:
             if feature[1] > 0.000:
                 print("{!s} : {:.4%}".format(feature[0].strip(), feature[1]))
-            f.write("{!s}\n".format(feature[0].strip()))
+           # f.write("{!s}\n".format(feature[0].strip()))
         f.close()
         
         print("{:*^100}".format(" Evaluate for Flow "))
@@ -321,13 +321,12 @@ class Detector:
     #spark = SparkSession.builder.appName("MalwareDetector").getOrCreate()
     
     def predict(self): 
-	#print self.predictingData.printSchema()
+	print self.predictingData.show()
         predictions = self.model.transform(self.predictingData)
+        #print predictions.show()
         df= predictions.select('prediction').collect()
         return df[0].asDict()["prediction"]
 
-        
-#import pandas  as pd
 
 #if __name__ == "__main__":
 #    """ HUONG DAN SU DUNG CLASS DETECTOR   
@@ -354,8 +353,8 @@ class Detector:
     	#detector.evaluate()
     	#detector.predict()
 
-def main(md,url):	
-	if md==0 :
+def detect(md,url):	
+        if md==0 :
                 detector = Detector(mode=md)
                 detector.evaluate()
         elif md ==1 :
@@ -385,10 +384,11 @@ if __name__ == "__main__":
                 url =sys.argv[2]
         else:
                 url =''
-        if detect(md,url)==0:
+        d=detect(md,url)
+        if d==0:
             print("clear url")
 
-        elif detect(md,url) == 1:
+        elif d == 1:
              print("malicious url")
         else:
            pass
