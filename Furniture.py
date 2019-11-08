@@ -13,7 +13,7 @@ from Other_Features import *
 import magic
 from collections import defaultdict
 import requests
-from googlesearch import search
+#from googlesearch import search
 import socket
 #extract furniture in url
 def spliturl(url):
@@ -48,8 +48,6 @@ def feature_extract(url,malicious):
                 else:
                      #print "request not html ,warning"
                      pass
-
-
         except Exception as e:
                 #print e
                 #return -1

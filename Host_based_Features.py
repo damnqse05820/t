@@ -74,7 +74,7 @@ def EmbeddedBrandName(domain):
 	response = urllib2.urlopen(req)
 	the_page = response.read()
 	#print the_page
-        #r=requests.get(url,verify=False)
+        #r=requests.get(url,verify=False,allow_redirects=True)
         strlist={"name","domain","logo"}
         for i in strlist :
                 if i in the_page:

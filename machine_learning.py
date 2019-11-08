@@ -146,12 +146,10 @@ predictionURL("https://www.youtube.com/watch?v=9ZsF5a_hNDU")
 def loadcols(dataset):
     col=[]
     for x in dataset.columns:
-	if x == 'URL' or x == 'Malicious' or x == 'features' or x == 'label'or x == '_c0':
+	if x == 'URL' or x == 'Malicious' or x == 'features' or x == 'label'or x == 'Unnamed':
 	    continue
 	col.append(x)
     return col
-
-
 
 class Detector:
     """ Lop phat hien ma doc
@@ -171,7 +169,7 @@ class Detector:
         self.datapath = datapath
         if mode == 0:
             self.dataset = self.loadDataset(datapath)
-            (self.trainingData, self.testingData) = self.dataset.randomSplit([0.8, 0.2])
+            (self.trainingData, self.testingData) = self.dataset.randomSplit([0.7, 0.3])
             self.trainingData = self.trainingData.repartition(300).cache()
             self.testingData = self.testingData.repartition(300).cache()
             self.modelpath = modelpath
