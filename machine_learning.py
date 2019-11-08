@@ -213,7 +213,7 @@ class Detector:
         # dataset.fillna(0)
         # Hop nhat cac cot thuoc tinh thanh mot cot dat ten la "features"
 	cols =loadcols(dataset)
-	print cols[55]
+	#print cols[55]
         assembler = VectorAssembler(inputCols=cols, outputCol="features")
         dataset = assembler.transform(dataset.fillna(0))
 	#print dataset["features"][55]
@@ -323,12 +323,11 @@ class Detector:
     def predict(self): 
 	#print self.predictingData.printSchema()
         predictions = self.model.transform(self.predictingData)
-	print predictions.select("prediction").show()
-	df.coalesce(1).write.format("text").option("header", "false").mode("overwrite").save("output.txt")
-        #df.write.format("csv").save("output.csv")
+        df= predictions.select('prediction').collect()
+        return df[0].asDict()["prediction"]
 
         
-import pandas  as pd
+#import pandas  as pd
 
 #if __name__ == "__main__":
 #    """ HUONG DAN SU DUNG CLASS DETECTOR   
@@ -357,38 +356,42 @@ import pandas  as pd
 
 def main(md,url):	
 	if md==0 :
-		detector = Detector(mode=md)
-		detector.evaluate()
-		
-	elif md ==1 :
-		url =sys.argv[2]
-		if not re.search('^http',url):
-			if scanport(sys.argv[2])==-1:
-			    url ='http://'+sys.argv[2]
-			else :
-			    url =scanport(sys.argv[2])
-		
-		furniture=feature_extract(url,-1)
-		if furniture ==-1 :
-			return -1
-		elif type(furniture) =='dict':
-			filename="data/predictions.csv"
-			df.to_csv(filename,index='false')
-			df= pd.DataFrame(feature)
-			df.to_csv(filename,index='false')
-			detector = Detector(mode=md,datapath=filename)
-			detector.predict(url)
-
-	else:
-		print "you input wrong "
+                detector = Detector(mode=md)
+                detector.evaluate()
+        elif md ==1 :
+                hostname,path,query,fragment=spliturl(url)
+                if not re.search('^http',hostname):
+                        if scanport(hostname):
+                            url ='https://'+url
+                        else :
+                            url ='http://'+url
+                furniture=feature_extract(url,0)
+                if furniture ==-1 :
+                        print("url is die")
+                        return -1
+                else:
+                        filename="data/predictions.csv"
+                        df= pd.DataFrame(furniture)
+                        df.to_csv(filename,index='false')
+                        detector = Detector(mode=md,datapath=filename)
+                        return detector.predict()
+        else:
+                print("you input wrong ")
+                return -1
 
 if __name__ == "__main__":
 	md=int(sys.argv[1] )
-	if len(sys.argv)==3:
-		url =sys.argv[2] 
-	else:
-		url =''
-	main(md,url)
+        if len(sys.argv)==3:
+                url =sys.argv[2]
+        else:
+                url =''
+        if detect(md,url)==0:
+            print("clear url")
+
+        elif detect(md,url) == 1:
+             print("malicious url")
+        else:
+           pass
 
 
 
