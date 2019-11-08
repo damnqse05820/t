@@ -235,7 +235,7 @@ class Detector:
         # Chuyen toan bo gia tri thuoc tinh thanh so neu chua chuyen
         featureIndexer = VectorIndexer(inputCol="features", outputCol="indexedFeatures", maxCategories=4).fit(trainingData)
         # Khai bao thuat toan RandomForest
-        rf = RandomForestClassifier(labelCol="indexedLabel", featuresCol= "indexedFeatures", numTrees=85,maxDepth=5, maxBins=32, seed=None,impurity="gini")
+        rf = RandomForestClassifier(labelCol="indexedLabel", featuresCol= "indexedFeatures", numTrees=25,maxDepth=5, maxBins=32, seed=None,impurity="gini")
         # Chuyen nhan du doan duoc tu dang so ve dang ban dau,
         labelConverter = IndexToString(inputCol="prediction", outputCol="predictedLabel", labels=labelIndexer.labels)
         # Hop nhat tat ca cac buoc thanh mot luong duy nhat pipeline
