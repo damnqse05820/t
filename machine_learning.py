@@ -56,7 +56,7 @@ def trainModel(trainingData):
 
 def evaluate(model, trainingData, testingData):
         # Ham kiem thu model, in ra man hinh do do chinh xac va thoi gian tinh toan
-        
+
         time_train = 0
         time_test = 0
             
@@ -146,7 +146,7 @@ predictionURL("https://www.youtube.com/watch?v=9ZsF5a_hNDU")
 def loadcols(dataset):
     col=[]
     for x in dataset.columns:
-	if x == 'URL' or x == 'Malicious' or x == 'features' or x == 'label'or x == 'Unnamed':
+	if x == 'URL' or x == 'Malicious' or x == 'features' or x == 'label'or x == 'Unnamed' or x == '_c0':
 	    continue
 	col.append(x)
     return col
@@ -169,7 +169,7 @@ class Detector:
         self.datapath = datapath
         if mode == 0:
             self.dataset = self.loadDataset(datapath)
-            (self.trainingData, self.testingData) = self.dataset.randomSplit([0.7, 0.3])
+            (self.trainingData, self.testingData) = self.dataset.randomSplit([0.8, 0.2])
             self.trainingData = self.trainingData.repartition(300).cache()
             self.testingData = self.testingData.repartition(300).cache()
             self.modelpath = modelpath
@@ -213,7 +213,7 @@ class Detector:
 	cols =loadcols(dataset)
 	#print cols[55]
         assembler = VectorAssembler(inputCols=cols, outputCol="features")
-        dataset = assembler.transform(dataset.fillna(0))
+        dataset = assembler.transform(dataset.dropna())
 	#print dataset["features"][55]
         #print("len(data)v2:", dataset.count())
         dataset = dataset.withColumn("label", dataset['Malicious'])

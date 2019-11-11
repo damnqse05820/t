@@ -83,7 +83,7 @@ def main ():
     #dic = defaultdict(list)
     filename='data/dataset.csv'
     length= len(dataset['url'])//10000
-    for i in range(7,length+1):
+    for i in range(24,39):
 	dic = defaultdict(list)
 	threads=[]
     	thread(dataset,i*10000,(i+1)*10000,threads,dic)

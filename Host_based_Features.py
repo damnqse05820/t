@@ -70,9 +70,18 @@ def EmbeddedBrandName(domain):
         host=convert_ip_to_host(domain)
         subdomain,domain,suffix=tldextract.extract(host)
         url="https://autocomplete.clearbit.com/v1/companies/suggest?query="+domain+"."+suffix
-	req = urllib2.Request(url)
-	response = urllib2.urlopen(req)
-	the_page = response.read()
+        response=""
+        for i in range(2):
+            try:
+                req = urllib2.Request(url)
+                response = urllib2.urlopen(req)
+                break
+            except:
+                time.sleep(1)
+        if response =="":
+            the_page =""
+        else:
+	    the_page = response.read()
 	#print the_page
         #r=requests.get(url,verify=False,allow_redirects=True)
         strlist={"name","domain","logo"}
