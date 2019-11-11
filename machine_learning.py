@@ -146,7 +146,7 @@ predictionURL("https://www.youtube.com/watch?v=9ZsF5a_hNDU")
 def loadcols(dataset):
     col=[]
     for x in dataset.columns:
-	if x == 'URL' or x == 'Malicious' or x == 'features' or x == 'label'or x == 'Unnamed' or x == '_c0':
+	if x == 'URL' or x == 'Malicious' or x == 'features' or x == 'label'or x == 'Unnamed' or x == '_c0' or x == 'src_exec_cnt' or x == 'src_eval_cnt' or x == 'src_escape_cnt' or x == 'src_search_cnt':
 	    continue
 	col.append(x)
     return col
