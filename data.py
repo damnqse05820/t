@@ -20,7 +20,7 @@ def readdata(filename):
 def datafurniture(dic,data,start,end,steps):    
     
     for i in range(start,end,steps):
-	if not re.search('^http',data['url'].iloc[i]):
+        if not 'http' in data['url'].iloc[i][:7]:
 		hostname,path,query,fragment=spliturl(data['url'].iloc[i])
 		if scanport(hostname)==1:
 			url ='https://'+data['url'].iloc [i]
@@ -79,17 +79,17 @@ def check_thread(threads):
 
 
 def main ():
-    dataset =readdata("data/url_all/dataset.csv")
+    dataset =readdata("data/url_all/dataset2.csv")
     #dic = defaultdict(list)
-    filename='data/dataset.csv'
+    #filename='data/dataset.csv'
     length= len(dataset['url'])//10000
-    for i in range(24,39):
+    for i in range(26,39):
 	dic = defaultdict(list)
 	threads=[]
-    	thread(dataset,i*10000,(i+1)*10000,threads,dic)
+        thread(dataset,0,len(dataset['url']),threads,dic)
     #while check_thread(threads):
 	#print "."
-	filename1='data/dataset'+str(i)+'.csv'
+	filename1='data/predictions.csv'
     	writedata(dic,filename1)
 
 main()

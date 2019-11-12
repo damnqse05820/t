@@ -167,7 +167,7 @@ class Detector:
     sc = spark.sparkContext
     def __init__(self, datapath="data/dataset.csv", modelpath="model",mode=1):
         self.datapath = datapath
-        if mode == 0:
+        if mode ==0:
             self.dataset = self.loadDataset(datapath)
             (self.trainingData, self.testingData) = self.dataset.randomSplit([0.8, 0.2])
             self.trainingData = self.trainingData.repartition(300).cache()
@@ -233,7 +233,7 @@ class Detector:
         # Chuyen toan bo gia tri thuoc tinh thanh so neu chua chuyen
         featureIndexer = VectorIndexer(inputCol="features", outputCol="indexedFeatures", maxCategories=4).fit(trainingData)
         # Khai bao thuat toan RandomForest
-        rf = RandomForestClassifier(labelCol="indexedLabel", featuresCol= "indexedFeatures", numTrees=25,maxDepth=5, maxBins=32, seed=None,impurity="gini")
+        rf = RandomForestClassifier(labelCol="indexedLabel", featuresCol= "indexedFeatures", numTrees=20,maxDepth=5, maxBins=32, seed=None,impurity="gini")
         # Chuyen nhan du doan duoc tu dang so ve dang ban dau,
         labelConverter = IndexToString(inputCol="prediction", outputCol="predictedLabel", labels=labelIndexer.labels)
         # Hop nhat tat ca cac buoc thanh mot luong duy nhat pipeline
@@ -319,12 +319,19 @@ class Detector:
     #spark = SparkSession.builder.appName("MalwareDetector").getOrCreate()
     
     def predict(self): 
-	print self.predictingData.show()
+	#print self.predictingData.show()
         predictions = self.model.transform(self.predictingData)
         #print predictions.show()
         df= predictions.select('prediction').collect()
         return df[0].asDict()["prediction"]
 
+        #predictionAndLabels = predictions.select("prediction", "indexedLabel").rdd
+        #metrics = MulticlassMetrics(predictionAndLabels)
+        #print("TPR: {:.3%} \tFPR: {:.3%}".format(metrics.truePositiveRate(1.0), metrics.falsePositiveRate(1.0)))
+        #print("TNR: {:.3%} \tFNR: {:.3%}".format(metrics.truePositiveRate(0.0), metrics.falsePositiveRate(0.0)))
+        #print("Confusion Matrix:")
+        #for line in metrics.confusionMatrix().toArray():
+        #    print(line)
 
 #if __name__ == "__main__":
 #    """ HUONG DAN SU DUNG CLASS DETECTOR   
@@ -356,8 +363,11 @@ def detect(md,url):
                 detector = Detector(mode=md)
                 detector.evaluate()
         elif md ==1 :
+                #filename="data/predictions.csv"
+                #detector = Detector(mode=md,datapath=filename)
+                #return detector.predict()
                 hostname,path,query,fragment=spliturl(url)
-                if not re.search('^http',hostname):
+                if not "http" in url[:7]:
                         if scanport(hostname):
                             url ='https://'+url
                         else :

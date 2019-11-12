@@ -43,7 +43,7 @@ def AgeDomain(domain):# year
     return 1 if ageofdomain/365 > 1 else 0
 
 def rank(host):
-        host=convert_ip_to_host(host)
+        #host=convert_ip_to_host(host)
 	
         xmlpath='http://data.alexa.com/data?cli=10&dat=snbamz&url='+host
         rank_country=-1
@@ -64,7 +64,7 @@ def rank(host):
 
         except Exception as e:
             return [-1,-1]
-#print rank('facebook.com')
+#print rank('https://outlook.office.com/mail/inbox')
 
 def EmbeddedBrandName(domain):
         host=convert_ip_to_host(domain)

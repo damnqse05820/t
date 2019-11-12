@@ -83,7 +83,7 @@ def feature_extract(url,malicious):
         Feature['QueryLength'].append(QueryLength(query))
         Feature['DoubleSlashInPath'].append(DoubleSlashInPath(path))
         Feature['NumSensitiveWords'].append(NumSensitiveWords(tokens_words))
-        rank_host,rank_country=rank(hostname)
+        rank_host,rank_country=rank(url)
         Feature['rank_host'].append(rank_host)
         Feature['rank_country'].append(rank_country)
         #print hostname

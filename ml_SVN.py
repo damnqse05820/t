@@ -9,7 +9,7 @@ import numpy as np
 def loadcols(dataset):
     col=[]
     for x in dataset.columns:
-        if x == 'URL' or x == 'Malicious' or x == 'features' or x == 'label'or x == 'Unnamed' or x == 'c0_':
+        if x == 'URL' or x == 'Malicious' or x == 'features' or x == 'label'or x == 'Unnamed' or x == 'c0_' or x == 'src_exec_cnt' or x == 'src_eval_cnt' or x == 'src_escape_cnt' or x == 'src_search_cnt':
             continue
         col.append(x)
         return col
@@ -18,7 +18,7 @@ class machine_learning_model:
     def __init__(self,mode=0):
         self.datapath="data/dataset.csv"
         data=pd.read_csv(self.datapath,low_memory=False)
-        data= data.dropna()
+        data= data.fillna(0)
         data= data.reset_index(drop=True)
         print len(data['Malicious'])
         #print type(data)
@@ -41,7 +41,7 @@ class machine_learning_model:
 
 
     def machine_learning_KNN(self):
-        knn = KNeighborsClassifier(n_neighbors = 3)
+        knn = KNeighborsClassifier(n_neighbors = 7)
         #self.X_train.isnull(np.array([np.nan, 0], dtype=np.float64))
         #self.y_train.isnull(np.array([np.nan, 0], dtype=np.float64))
         knn.fit(self.X_train, np.ravel(self.y_train))

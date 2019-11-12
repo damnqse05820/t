@@ -5,7 +5,7 @@ interesting_files = glob("*.csv") # it grabs all the csv files from the director
 
 df_list = []
 for filename in sorted(interesting_files):
-	df_list.append(pd.read_csv(filename))
+	df_list.append(pd.read_csv(filename,low_memory=False))
 full_df = pd.concat(df_list)
 del full_df['Unnamed: 0']
 # save the final file in same/different directory:
