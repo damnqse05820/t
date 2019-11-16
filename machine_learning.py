@@ -322,16 +322,16 @@ class Detector:
 	#print self.predictingData.show()
         predictions = self.model.transform(self.predictingData)
         #print predictions.show()
-        df= predictions.select('prediction').collect()
-        return df[0].asDict()["prediction"]
-
-        #predictionAndLabels = predictions.select("prediction", "indexedLabel").rdd
-        #metrics = MulticlassMetrics(predictionAndLabels)
-        #print("TPR: {:.3%} \tFPR: {:.3%}".format(metrics.truePositiveRate(1.0), metrics.falsePositiveRate(1.0)))
-        #print("TNR: {:.3%} \tFNR: {:.3%}".format(metrics.truePositiveRate(0.0), metrics.falsePositiveRate(0.0)))
-        #print("Confusion Matrix:")
-        #for line in metrics.confusionMatrix().toArray():
-        #    print(line)
+        #df= predictions.select('prediction').collect()
+        #return df[0].asDict()["prediction"]
+        predictions.select("URL","prediction", "indexedLabel", "label").show(200)
+        predictionAndLabels = predictions.select("prediction", "indexedLabel").rdd
+        metrics = MulticlassMetrics(predictionAndLabels)
+        print ("TPR: {:.3%} \tFPR: {:.3%}".format(metrics.truePositiveRate(1.0), metrics.falsePositiveRate(1.0)))
+        print ("TNR: {:.3%} \tFNR: {:.3%}".format(metrics.truePositiveRate(0.0), metrics.falsePositiveRate(0.0)))
+        print ("Confusion Matrix:")
+        for line in metrics.confusionMatrix().toArray():
+            print(line)
 
 #if __name__ == "__main__":
 #    """ HUONG DAN SU DUNG CLASS DETECTOR   
@@ -363,9 +363,9 @@ def detect(md,url):
                 detector = Detector(mode=md)
                 detector.evaluate()
         elif md ==1 :
-                #filename="data/predictions.csv"
-                #detector = Detector(mode=md,datapath=filename)
-                #return detector.predict()
+                filename="data/predictions.csv"
+                detector = Detector(mode=md,datapath=filename)
+                return detector.predict()
                 hostname,path,query,fragment=spliturl(url)
                 if not "http" in url[:7]:
                         if scanport(hostname):

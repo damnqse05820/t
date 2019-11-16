@@ -28,19 +28,20 @@ def convert_ip_to_host(ip):
 def AgeDomain(domain):# year
     try:
         domain =convert_ip_to_host(domain)
+        print domain
         age= whois.query(domain)
-        #print age
-    except:
-        return 0
-    try:
+        print age.__dict___
         creation_date = age.creation_date
+        print(creation_date)
         expiration_date = age.expiration_date
+        print(expiration_date)
     except:
         return 0
     ageofdomain = 0
     if expiration_date:
         ageofdomain = abs((expiration_date - creation_date).days)
-    return 1 if ageofdomain/365 > 1 else 0
+        print ageofdomain
+    return 1 if ageofdomain/180 > 1 else 0
 
 def rank(host):
         #host=convert_ip_to_host(host)
@@ -55,10 +56,10 @@ def rank(host):
             rlist=r.content.split('>')
             for i in rlist:
                 if 'REACH' in i and 'RANK=' in i:
-                    if int(i.split("\"")[-2])<1000000:
+                    if int(i.split("\"")[-2])<10000000:
                         rank_host=1
                 if 'COUNTRY' in i and 'RANK=' in i:
-                    if int(i.split("\"")[-2])<1000000:
+                    if int(i.split("\"")[-2])<10000000:
                         rank_country=1
             return [rank_host,rank_country]
 
@@ -91,5 +92,5 @@ def EmbeddedBrandName(domain):
         return 0
 
 #def
-#print AgeDomain('103.102.166.224')
+#print AgeDomain('daday.vuikhoetainha.com')
 #print EmbeddedBrandName('facebook.com')

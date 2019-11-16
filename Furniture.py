@@ -15,6 +15,7 @@ from collections import defaultdict
 import requests
 #from googlesearch import search
 import socket
+from io import open
 #extract furniture in url
 def spliturl(url):
         fragment=''
@@ -40,11 +41,16 @@ def feature_extract(url,malicious):
 
                 r= requests.get(url,verify=False,timeout=5)
                 #print r
-                if r.status_code > 500:
+                #if r.status_code > 500:
                         #return -1
-                        pass
+                 #       pass
                 if 'HTML document' in magic.from_buffer(r.content) :
-                     soup=BeautifulSoup(r.content,"lxml")
+                    #try:
+                        
+                        html=r.content.encode('ascii','ignore')
+                        soup = BeautifulSoup(html, 'lxml')
+                    #except:
+                       # pass
                 else:
                      #print "request not html ,warning"
                      pass
@@ -53,9 +59,10 @@ def feature_extract(url,malicious):
                 #return -1
                 pass
         hostname,path,query,fragment=spliturl(url)
-        #print hostname,path,query,fragment
+       # print hostname,path,query,fragment
         subdomain,domain,suffix=tldextract.extract(url)
         #print subdomain,domain,suffix
+
         Feature['URL'].append(url)
         Feature['EmbeddedBrandName'].append(EmbeddedBrandName(domain))
         Feature['NumDots'].append(NumDots(url))
