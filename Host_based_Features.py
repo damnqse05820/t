@@ -28,19 +28,19 @@ def convert_ip_to_host(ip):
 def AgeDomain(domain):# year
     try:
         domain =convert_ip_to_host(domain)
-        print domain
+       # print domain
         age= whois.query(domain)
-        print age.__dict___
+        #print age.__dict___
         creation_date = age.creation_date
-        print(creation_date)
+        #print(creation_date)
         expiration_date = age.expiration_date
-        print(expiration_date)
+        #print(expiration_date)
     except:
         return 0
     ageofdomain = 0
     if expiration_date:
         ageofdomain = abs((expiration_date - creation_date).days)
-        print ageofdomain
+        #print ageofdomain
     return 1 if ageofdomain/180 > 1 else 0
 
 def rank(host):

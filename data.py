@@ -23,9 +23,9 @@ def datafurniture(dic,data,start,end,steps):
         if not 'http' in data['url'].iloc[i][:7]:
 		hostname,path,query,fragment=spliturl(data['url'].iloc[i])
 		if scanport(hostname)==1:
-			url ='https://'+data['url'].iloc [i]
+			url ='https://'+data['url'].iloc[i]
 		else:
-			url ='http://'+data['url'].iloc [i]
+			url ='http://'+data['url'].iloc[i]
 		
 	else:
 		url =data['url'].iloc [i]
@@ -37,11 +37,15 @@ def datafurniture(dic,data,start,end,steps):
 	     if key !="URL":
 		dic[key].append(value[0])
 	     else:
-		dic[key].append(data['url'].iloc [i])
+		dic[key].append(data['url'].iloc[i])
 		#print len(dic[key])
 	#print threading.current_thread().name,i,url 
-	#print data['url'][20003]
-
+    #print dic
+#dic = defaultdict(list)
+#data={}
+#data['url']=["crackspider.us/toolbar/install.php?pack=exe","apps.facebook.com/ilike/artist/Harmonium"]
+#data['malware']=[1,0]
+#datafurniture(dic,data,0,2,1)
 def writedata(data,filename):
     df= pd.DataFrame(data)	
     df.to_csv(filename,index='false')
@@ -79,17 +83,17 @@ def check_thread(threads):
 
 
 def main ():
-    dataset =readdata("data/url_all/dataset2.csv")
+    dataset =readdata("data/url_all/dataset.csv")
     #dic = defaultdict(list)
-    #filename='data/dataset.csv'
+    filename='data/dataset.csv'
     length= len(dataset['url'])//10000
-    for i in range(1):
+    for i in range(24,25):
 	dic = defaultdict(list)
 	threads=[]
-        thread(dataset,0,len(dataset['url']),threads,dic)
+        thread(dataset,i*10000,(i+1)*10000,threads,dic)
     #while check_thread(threads):
 	#print "."
-	filename1='data/predictions.csv'
+	filename1='data/dataset'+str(i)+'.csv'
     	writedata(dic,filename1)
 
 main()

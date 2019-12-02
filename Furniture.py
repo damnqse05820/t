@@ -189,8 +189,10 @@ def scanport(domain):
         return -1
     return -1
 
-#url='http://18298.url.9xiazaiqi.com/xiaz/BeyondCompare4ä¸“ä¸šç ´è§£ç‰ˆï¼ˆå'
+#url='crackspider.us/toolbar/install.php?pack=exe'
+#print "crackspider.us/toolbar/install.php?pack=exe"
 #print feature_extract(url,1)
+
 #print googleSearch('fabook.com')
 #url="stainupurworejo.ac.id/wp-content/upgrade/autodhl/authorize/track.php?rand=13InboxLightaspxn.1774256418&&email="
 #print search_in_google("fakebook.com")
